@@ -41,7 +41,7 @@ class SpectrogramPlot : public Plot
     Q_OBJECT
 
 public:
-    SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src);
+    SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float>>> src, Tuner *tuner);
     void invalidateEvent() override;
     std::shared_ptr<AbstractSampleSource> output() override;
     void paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRange) override;
@@ -60,12 +60,13 @@ public slots:
     void setPowerMax(int power);
     void setPowerMin(int power);
     void setZoomLevel(int zoom);
-    void tunerMoved();
+    void tunerMoved(int deviation);
 
 private:
     const int linesPerGraduation = 50;
     static const int tileSize = 65536; // This must be a multiple of the maximum FFT size
 
+    Tuner *tuner;
     std::shared_ptr<SampleSource<std::complex<float>>> inputSource;
     std::vector<AnnotationLocation> visibleAnnotationLocations;
     std::unique_ptr<FFT> fft;
@@ -82,7 +83,6 @@ private:
     bool frequencyScaleEnabled;
     bool sigmfAnnotationsEnabled;
 
-    Tuner tuner;
     std::shared_ptr<TunerTransform> tunerTransform;
 
     QPixmap* getPixmapTile(size_t tile);

@@ -39,7 +39,10 @@ MainWindow::MainWindow()
     input = new InputSource();
     input->subscribe(this);
 
-    plots = new PlotView(input);
+    QSettings settings;
+    tuner = new Tuner(settings.value("FFTSize", 9).toInt(), this);
+
+    plots = new PlotView(input, tuner);
     setCentralWidget(plots);
 
     // Connect dock inputs
@@ -54,6 +57,7 @@ MainWindow::MainWindow()
     connect(dock->annosCheckBox, &QCheckBox::stateChanged, dock, &SpectrogramControls::enableAnnotations);
     connect(dock->commentsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableAnnotationCommentsTooltips);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
+    connect(tuner, &Tuner::tunerMoved, dock, &SpectrogramControls::tunerMoved);
 
     // Connect dock outputs
     connect(plots, &PlotView::timeSelectionChanged, dock, &SpectrogramControls::timeSelectionChanged);

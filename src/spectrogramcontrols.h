@@ -27,6 +27,7 @@
 #include <QSpinBox>
 #include <QCheckBox>
 #include <QLabel>
+#include "tuner.h"
 
 class SpectrogramControls : public QDockWidget
 {
@@ -44,6 +45,7 @@ public slots:
     void timeSelectionChanged(float time);
     void zoomIn();
     void zoomOut();
+    void tunerMoved(int deviation);
     void enableAnnotations(bool enabled);
 
 private slots:
@@ -59,6 +61,7 @@ private:
     QFormLayout *layout;
     void clearCursorLabels();
     void fftOrZoomChanged(void);
+    int getBandwidth(int deviation);
 
 public:
     QPushButton *fileOpenButton;
@@ -73,6 +76,7 @@ public:
     QLabel *periodLabel;
     QLabel *symbolRateLabel;
     QLabel *symbolPeriodLabel;
+    QLabel *bandwidthLabel;
     QCheckBox *scalesCheckBox;
     QCheckBox *annosCheckBox;
     QCheckBox *commentsCheckBox;
