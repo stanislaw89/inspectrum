@@ -303,7 +303,8 @@ QJsonObject InputSource::readMetaData(const QString &filename)
                 auto capture = capture_ref.toObject();
                 if (capture.contains("core:frequency") && capture["core:frequency"].isDouble()) {
                     frequency = capture["core:frequency"].toDouble();
-                }
+                    setCenterFrequency(frequency);
+                }                    
             } else {
                 throw std::runtime_error("SigMF meta data is invalid (invalid capture object)");
             }
