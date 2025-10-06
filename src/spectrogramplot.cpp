@@ -242,6 +242,10 @@ QString *SpectrogramPlot::mouseAnnotationComment(const QMouseEvent *event) {
     return nullptr;
 }
 
+void SpectrogramPlot::moveTunerToMouse() {
+    tuner->setCentre(lastMouseY);
+}
+
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
 {
     if (!inputSource || inputSource->count() == 0)
@@ -375,6 +379,7 @@ int SpectrogramPlot::linesPerTile()
 
 bool SpectrogramPlot::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
+    lastMouseY = event.pos().y();
     if (tunerEnabled())
         return tuner->mouseEvent(type, event);
 

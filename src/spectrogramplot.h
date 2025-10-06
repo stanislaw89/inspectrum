@@ -56,6 +56,8 @@ public:
     bool isAnnotationsEnabled();
     QString *mouseAnnotationComment(const QMouseEvent *event);
 
+    void moveTunerToMouse();
+
 public slots:
     void setFFTSize(int size);
     void setPowerMax(int power);
@@ -86,6 +88,8 @@ private:
     double centerFrequency;
     bool frequencyScaleEnabled;
     bool sigmfAnnotationsEnabled;
+
+    float lastMouseY;
 
     std::shared_ptr<TunerTransform> tunerTransform;
 
