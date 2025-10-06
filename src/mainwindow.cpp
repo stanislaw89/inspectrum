@@ -111,6 +111,12 @@ void MainWindow::openFile(QString fileName)
     try
     {
         input->openFile(fileName.toUtf8().constData());
+        if (input->rate() > 0) {
+            setSampleRate(input->rate());
+        }
+        if (input->centerFrequency() > 0) {
+            setCenterFrequency(input->centerFrequency());
+        }
     }
     catch (const std::exception &ex)
     {
@@ -162,7 +168,7 @@ void MainWindow::setSampleRate(QString rate)
 
 void MainWindow::setSampleRate(double rate)
 {
-    dock->sampleRate->setText(QString::number(rate));
+    dock->sampleRate->setText(QString::number(rate, 'f', 0));
 }
 
 void MainWindow::setCenterFrequency(QString freq)
@@ -178,7 +184,7 @@ void MainWindow::setCenterFrequency(QString freq)
 
 void MainWindow::setCenterFrequency(double freq)
 {
-    dock->centerFrequency->setText(QString::number(freq));
+    dock->centerFrequency->setText(QString::number(freq, 'f', 0));
 }
 
 void MainWindow::setFormat(QString fmt)

@@ -24,6 +24,8 @@
 
 int main(int argc, char *argv[])
 {
+    setvbuf(stdout, nullptr, _IONBF, 0);
+    
     QApplication a(argc, argv);
     a.setApplicationName("inspectrum");
     a.setOrganizationName("inspectrum");
