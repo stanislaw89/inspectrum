@@ -84,6 +84,6 @@ int main(int argc, char *argv[])
         mainWin.setCenterFrequency(centerfreq);
     }
 
-    mainWin.show();
+    mainWin.showMaximized();
     return a.exec();
 }
