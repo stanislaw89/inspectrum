@@ -342,6 +342,7 @@ void PlotView::keyPressEvent(QKeyEvent *event) {
 			}
 			plot_src = spectrogramPlot->output();
 			addPlot(Plots::frequencyPlot(plot_src));
+            spectrogramPlot->moveTunerToMouse();
 			repaint();
 			break;
 		case Qt::Key_R:
