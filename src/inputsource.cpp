@@ -245,7 +245,7 @@ QJsonObject InputSource::readMetaData(const QString &filename)
 {
     QFile datafile(filename);
     if (!datafile.open(QFile::ReadOnly | QIODevice::Text)) {
-        throw std::runtime_error("Error while opening meta data file: " + datafile.errorString().toStdString());
+        return QJsonObject(); // skip
     }
 
     QJsonDocument d = QJsonDocument::fromJson(datafile.readAll());
