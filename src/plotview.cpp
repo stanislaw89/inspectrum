@@ -337,12 +337,12 @@ void PlotView::keyPressEvent(QKeyEvent *event) {
 	        cursorsMoved();
 			break;
 		case Qt::Key_F:
+            spectrogramPlot->moveTunerToMouse();
 			if (spectrogramPlot->tunerEnabled()) {
 				break;
 			}
 			plot_src = spectrogramPlot->output();
 			addPlot(Plots::frequencyPlot(plot_src));
-            spectrogramPlot->moveTunerToMouse();
 			repaint();
 			break;
 		case Qt::Key_R:
