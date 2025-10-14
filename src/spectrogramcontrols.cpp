@@ -58,6 +58,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     fftSizeSlider = new QSlider(Qt::Horizontal, widget);
     fftSizeSlider->setRange(4, 13);
     fftSizeSlider->setPageStep(1);
+    fftSizeSlider->setMinimumWidth(120);
 
     fftSizeValueLabel = new QLabel();
     fftSizeLabel = new QLabel(tr("FFT size:"));
@@ -72,6 +73,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
     zoomLevelSlider->setRange(0, 10);
     zoomLevelSlider->setPageStep(1);
+    zoomLevelSlider->setMinimumWidth(120);
 
     zoomLevelValueLabel = new QLabel();
     zoomLevelLabel = new QLabel(tr("Zoom:"));
@@ -85,6 +87,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     powerMaxSlider = new QSlider(Qt::Horizontal, widget);
     powerMaxSlider->setRange(-140, 10);
+    powerMaxSlider->setMinimumWidth(120);
 
     powerMaxValueLabel = new QLabel();
     powerMaxLabel = new QLabel(tr("Power max:"));
@@ -98,6 +101,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     powerMinSlider = new QSlider(Qt::Horizontal, widget);
     powerMinSlider->setRange(-140, 10);
+    powerMinSlider->setMinimumWidth(120);
 
     powerMinValueLabel = new QLabel();
     powerMinLabel = new QLabel(tr("Power min:"));
@@ -111,6 +115,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
 
     squelchSlider = new QSlider(Qt::Horizontal, widget);
     squelchSlider->setRange(0, 21);
+    squelchSlider->setMinimumWidth(120);
     layout->addRow(new QLabel(tr("Squelch:")), squelchSlider);
 
 
@@ -124,7 +129,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("<b>Time selection</b>")));
 
     cursorsCheckBox = new QCheckBox(widget);
-    layout->addRow(new QLabel(tr("Enable cursors:")), cursorsCheckBox);
+    layout->addRow(new QLabel(tr("Enable cursors[C]:")), cursorsCheckBox);
     cursorsFreezeCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Freeze cursors:")), cursorsFreezeCheckBox);
 
@@ -146,7 +151,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
     bandwidthLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Bandwidth:")), bandwidthLabel);
+    layout->addRow(new QLabel(tr("Bandwidth[F]:")), bandwidthLabel);
 
     // SigMF selection settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
@@ -155,7 +160,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     annosCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Display Annotations:")), annosCheckBox);
     commentsCheckBox = new QCheckBox(widget);
-    layout->addRow(new QLabel(tr("Display annotation comments tooltips:")), commentsCheckBox);
+    layout->addRow(new QLabel(tr("Annotations comments:")), commentsCheckBox);
 
 
 
