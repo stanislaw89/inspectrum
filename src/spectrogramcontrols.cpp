@@ -23,6 +23,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QLabel>
+#include <QHBoxLayout>
 #include <cmath>
 #include "util.h"
 
@@ -58,21 +59,55 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     fftSizeSlider->setRange(4, 13);
     fftSizeSlider->setPageStep(1);
 
-    layout->addRow(new QLabel(tr("FFT size:")), fftSizeSlider);
+    fftSizeValueLabel = new QLabel();
+    fftSizeLabel = new QLabel(tr("FFT size:"));
+    QWidget *fftSizeWidget = new QWidget(widget);
+    QHBoxLayout *fftSizeLayout = new QHBoxLayout(fftSizeWidget);
+    fftSizeLayout->setContentsMargins(0, 0, 0, 0);
+    fftSizeLayout->addWidget(fftSizeValueLabel);
+    fftSizeLayout->addWidget(fftSizeLabel);
+    fftSizeLayout->addStretch();
+    layout->addRow(fftSizeWidget, fftSizeSlider);
 
     zoomLevelSlider = new QSlider(Qt::Horizontal, widget);
     zoomLevelSlider->setRange(0, 10);
     zoomLevelSlider->setPageStep(1);
 
-    layout->addRow(new QLabel(tr("Zoom:")), zoomLevelSlider);
+    zoomLevelValueLabel = new QLabel();
+    zoomLevelLabel = new QLabel(tr("Zoom:"));
+    QWidget *zoomLevelWidget = new QWidget(widget);
+    QHBoxLayout *zoomLevelLayout = new QHBoxLayout(zoomLevelWidget);
+    zoomLevelLayout->setContentsMargins(0, 0, 0, 0);
+    zoomLevelLayout->addWidget(zoomLevelValueLabel);
+    zoomLevelLayout->addWidget(zoomLevelLabel);
+    zoomLevelLayout->addStretch();
+    layout->addRow(zoomLevelWidget, zoomLevelSlider);
 
     powerMaxSlider = new QSlider(Qt::Horizontal, widget);
     powerMaxSlider->setRange(-140, 10);
-    layout->addRow(new QLabel(tr("Power max:")), powerMaxSlider);
+
+    powerMaxValueLabel = new QLabel();
+    powerMaxLabel = new QLabel(tr("Power max:"));
+    QWidget *powerMaxWidget = new QWidget(widget);
+    QHBoxLayout *powerMaxLayout = new QHBoxLayout(powerMaxWidget);
+    powerMaxLayout->setContentsMargins(0, 0, 0, 0);
+    powerMaxLayout->addWidget(powerMaxValueLabel);
+    powerMaxLayout->addWidget(powerMaxLabel);
+    powerMaxLayout->addStretch();
+    layout->addRow(powerMaxWidget, powerMaxSlider);
 
     powerMinSlider = new QSlider(Qt::Horizontal, widget);
     powerMinSlider->setRange(-140, 10);
-    layout->addRow(new QLabel(tr("Power min:")), powerMinSlider);
+
+    powerMinValueLabel = new QLabel();
+    powerMinLabel = new QLabel(tr("Power min:"));
+    QWidget *powerMinWidget = new QWidget(widget);
+    QHBoxLayout *powerMinLayout = new QHBoxLayout(powerMinWidget);
+    powerMinLayout->setContentsMargins(0, 0, 0, 0);
+    powerMinLayout->addWidget(powerMinValueLabel);
+    powerMinLayout->addWidget(powerMinLabel);
+    powerMinLayout->addStretch();
+    layout->addRow(powerMinWidget, powerMinSlider);
 
     squelchSlider = new QSlider(Qt::Horizontal, widget);
     squelchSlider->setRange(0, 21);
@@ -183,11 +218,21 @@ void SpectrogramControls::setDefaults()
     QSettings settings;
     int savedSampleRate = settings.value("SampleRate", 8000000).toInt();
     sampleRate->setText(QString::number(savedSampleRate));
-    fftSizeSlider->setValue(settings.value("FFTSize", 9).toInt());
-    powerMaxSlider->setValue(settings.value("PowerMax", 0).toInt());
-    powerMinSlider->setValue(settings.value("PowerMin", -100).toInt());
+    int fftSizeValue = settings.value("FFTSize", 9).toInt();
+    fftSizeSlider->setValue(fftSizeValue);
+    int fftSize = pow(2, fftSizeValue);
+    fftSizeValueLabel->setText(QString("[%1]").arg(fftSize));
+    int powerMaxValue = settings.value("PowerMax", 0).toInt();
+    powerMaxSlider->setValue(powerMaxValue);
+    powerMaxValueLabel->setText(QString("[%1]").arg(powerMaxValue));
+    int powerMinValue = settings.value("PowerMin", -100).toInt();
+    powerMinSlider->setValue(powerMinValue);
+    powerMinValueLabel->setText(QString("[%1]").arg(powerMinValue));
     squelchSlider->setValue(settings.value("Squelch", 0).toInt());
-    zoomLevelSlider->setValue(settings.value("ZoomLevel", 0).toInt());
+    int zoomLevelValue = settings.value("ZoomLevel", 0).toInt();
+    zoomLevelSlider->setValue(zoomLevelValue);
+    int zoomLevel = pow(2, zoomLevelValue);
+    zoomLevelValueLabel->setText(QString("[%1]").arg(zoomLevel));
 
     int savedFreq = settings.value("CenterFrequency", 0).toInt();
     centerFrequency->setText(QString::number(savedFreq));
@@ -204,6 +249,8 @@ void SpectrogramControls::fftSizeChanged(int value)
 {
     QSettings settings;
     settings.setValue("FFTSize", value);
+    int fftSize = pow(2, value);
+    fftSizeValueLabel->setText(QString("[%1]").arg(fftSize));
     fftOrZoomChanged();
 }
 
@@ -211,6 +258,8 @@ void SpectrogramControls::zoomLevelChanged(int value)
 {
     QSettings settings;
     settings.setValue("ZoomLevel", value);
+    int zoomLevel = pow(2, value);
+    zoomLevelValueLabel->setText(QString("[%1]").arg(zoomLevel));
     fftOrZoomChanged();
 }
 
@@ -218,6 +267,7 @@ void SpectrogramControls::powerMinChanged(int value)
 {
     QSettings settings;
     settings.setValue("PowerMin", value);
+    powerMinValueLabel->setText(QString("[%1]").arg(value));
 }
 
 void SpectrogramControls::squelchChanged(int value)
@@ -231,6 +281,7 @@ void SpectrogramControls::powerMaxChanged(int value)
 {
     QSettings settings;
     settings.setValue("PowerMax", value);
+    powerMaxValueLabel->setText(QString("[%1]").arg(value));
 }
 
 void SpectrogramControls::fileOpenButtonClicked()

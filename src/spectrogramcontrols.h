@@ -83,6 +83,14 @@ public:
     QLabel *symbolRateLabel;
     QLabel *symbolPeriodLabel;
     QLabel *bandwidthLabel;
+    QLabel *fftSizeLabel;
+    QLabel *fftSizeValueLabel;
+    QLabel *zoomLevelLabel;
+    QLabel *zoomLevelValueLabel;
+    QLabel *powerMaxLabel;
+    QLabel *powerMaxValueLabel;
+    QLabel *powerMinLabel;
+    QLabel *powerMinValueLabel;
 
     QLabel *startTimeLabel;
     double startTime;
