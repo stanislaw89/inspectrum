@@ -84,6 +84,18 @@ int main(int argc, char *argv[])
         mainWin.setCenterFrequency(centerfreq);
     }
 
+#ifdef Q_OS_LINUX
+    mainWin.show();
+    QTimer::singleShot(0, &mainWin, [&mainWin]() {
+        mainWin.showMaximized();
+        if (!(mainWin.windowState() & Qt::WindowMaximized)) {
+            if (auto screen = QGuiApplication::primaryScreen()) {
+                mainWin.setGeometry(screen->availableGeometry());
+            }
+        }
+    });
+#else
     mainWin.showMaximized();
+#endif
     return a.exec();
 }
