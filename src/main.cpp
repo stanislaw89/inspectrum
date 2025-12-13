@@ -19,13 +19,16 @@
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QTimer>
 
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
     setvbuf(stdout, nullptr, _IONBF, 0);
-    
+
     QApplication a(argc, argv);
     a.setApplicationName("inspectrum");
     a.setOrganizationName("inspectrum");
@@ -54,8 +57,8 @@ int main(int argc, char *argv[])
 
     // Process the actual command line
     parser.process(a);
- 
-    // Check for file format override   
+
+    // Check for file format override
     if(parser.isSet(formatOption)){
         mainWin.setFormat(parser.value(formatOption));
     }
@@ -84,10 +87,10 @@ int main(int argc, char *argv[])
         mainWin.setCenterFrequency(centerfreq);
     }
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX) || defined(__linux__)
     mainWin.show();
-    QTimer::singleShot(0, &mainWin, [&mainWin]() {
-        mainWin.showMaximized();
+    QTimer::singleShot(1, &mainWin, [&mainWin]() {
+        mainWin.setWindowState(Qt::WindowMaximized | Qt::WindowActive);
         if (!(mainWin.windowState() & Qt::WindowMaximized)) {
             if (auto screen = QGuiApplication::primaryScreen()) {
                 mainWin.setGeometry(screen->availableGeometry());
