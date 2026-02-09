@@ -62,6 +62,7 @@ MainWindow::MainWindow()
     connect(dock->commentsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableAnnotationCommentsTooltips);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
     connect(tuner, &Tuner::tunerMoved, dock, &SpectrogramControls::tunerMoved);
+    connect(dock, &SpectrogramControls::closeFMDemod, plots, &PlotView::closeFrequencyDemod);
 
     // Connect dock outputs
     connect(plots, &PlotView::timeSelectionChanged, dock, &SpectrogramControls::timeSelectionChanged);

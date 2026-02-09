@@ -40,6 +40,7 @@ public:
 signals:
     void fftOrZoomChanged(int fftSize, int zoomLevel);
     void openFile(QString fileName);
+    void closeFMDemod();
 
 public slots:
     void timeSelectionChanged(float time);
@@ -58,6 +59,7 @@ private slots:
     void squelchChanged(int value);
     void fileOpenButtonClicked();
     void cursorsStateChanged(int state);
+    void closeFMDemodClicked();
 
 private:
     QWidget *widget;
@@ -83,6 +85,7 @@ public:
     QLabel *symbolRateLabel;
     QLabel *symbolPeriodLabel;
     QLabel *bandwidthLabel;
+    QPushButton *closeFMDemodButton;
     QLabel *fftSizeLabel;
     QLabel *fftSizeValueLabel;
     QLabel *zoomLevelLabel;

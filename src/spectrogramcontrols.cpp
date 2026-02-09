@@ -151,7 +151,17 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
     bandwidthLabel = new QLabel();
-    layout->addRow(new QLabel(tr("Bandwidth[F]:")), bandwidthLabel);
+    closeFMDemodButton = new QPushButton(tr("X"));
+    closeFMDemodButton->setToolTip(tr("Close FM demod"));
+    closeFMDemodButton->setFixedWidth(20);
+    QLabel *bandwidthTitleLabel = new QLabel(tr("Bandwidth[F]:"));
+    QWidget *bandwidthTitleWidget = new QWidget(widget);
+    QHBoxLayout *bandwidthTitleLayout = new QHBoxLayout(bandwidthTitleWidget);
+    bandwidthTitleLayout->setContentsMargins(0, 0, 0, 0);
+    bandwidthTitleLayout->addWidget(closeFMDemodButton);
+    bandwidthTitleLayout->addWidget(bandwidthTitleLabel);
+    bandwidthTitleLayout->addStretch();
+    layout->addRow(bandwidthTitleWidget, bandwidthLabel);
 
     // SigMF selection settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
@@ -191,6 +201,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     connect(powerMinSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMinChanged);
     connect(powerMaxSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMaxChanged);
     connect(squelchSlider, &QSlider::valueChanged, this, &SpectrogramControls::squelchChanged);
+    connect(closeFMDemodButton, &QPushButton::clicked, this, &SpectrogramControls::closeFMDemodClicked);
 }
 
 void SpectrogramControls::clearCursorLabels()
@@ -387,4 +398,10 @@ int SpectrogramControls::getBandwidth(int deviation) {
 void SpectrogramControls::enableAnnotations(bool enabled) {
     // disable annotation comments checkbox when annotations are disabled
     commentsCheckBox->setEnabled(enabled);
+}
+
+void SpectrogramControls::closeFMDemodClicked()
+{
+    bandwidthLabel->setText("");
+    emit closeFMDemod();
 }

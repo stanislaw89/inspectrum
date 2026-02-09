@@ -42,6 +42,7 @@
 
 #include "plots.h"
 #include "symbolprogoutput.h"
+#include "frequencydemod.h"
 
 
 
@@ -729,6 +730,28 @@ void PlotView::setSquelch(int sq) {
 	if (spectrogramPlot != nullptr)
 		spectrogramPlot->setSquelch(sq);
     updateView();
+}
+
+void PlotView::closeFrequencyDemod()
+{
+    bool removed = false;
+    for (auto it = plots.begin(); it != plots.end();) {
+        TracePlot *trace = dynamic_cast<TracePlot*>(it->get());
+        if (trace) {
+            auto src = trace->source();
+            if (std::dynamic_pointer_cast<FrequencyDemod>(src)) {
+                it = plots.erase(it);
+                removed = true;
+                continue;
+            }
+        }
+        ++it;
+    }
+
+    if (removed) {
+        last_src_used = nullptr;
+        repaint();
+    }
 }
 
 void PlotView::setPowerMax(int power)

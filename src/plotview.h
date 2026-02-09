@@ -64,6 +64,7 @@ public slots:
     void setPowerMin(int power);
     void setPowerMax(int power);
     void setSquelch(int squelch);
+    void closeFrequencyDemod();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -120,5 +121,4 @@ private:
     int sampleToColumn(size_t sample);
     size_t columnToSample(int col);
 };
-
 
