@@ -46,7 +46,7 @@ public slots:
     void timeSelectionChanged(float time);
     void zoomIn();
     void zoomOut();
-    void tunerMoved(int deviation);
+    void tunerMoved(int centre, int deviation);
     void enableAnnotations(bool enabled);
     void coordinateClick(double time_pos, double freq_pos, bool down);
 
@@ -67,6 +67,8 @@ private:
     void clearCursorLabels();
     void fftOrZoomChanged(void);
     int getBandwidth(int deviation);
+    double getTunerCenterFrequency(int centre) const;
+    void updateTunerLabels();
 
 public:
     QPushButton *fileOpenButton;
@@ -85,6 +87,7 @@ public:
     QLabel *symbolRateLabel;
     QLabel *symbolPeriodLabel;
     QLabel *bandwidthLabel;
+    QLabel *tunerCenterFrequencyLabel;
     QPushButton *closeFMDemodButton;
     QLabel *fftSizeLabel;
     QLabel *fftSizeValueLabel;
@@ -105,4 +108,9 @@ public:
     QCheckBox *scalesCheckBox;
     QCheckBox *annosCheckBox;
     QCheckBox *commentsCheckBox;
+
+private:
+    bool tunerActive = false;
+    int tunerCentre = 0;
+    int tunerDeviation = 0;
 };

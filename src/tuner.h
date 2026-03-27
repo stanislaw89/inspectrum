@@ -44,7 +44,7 @@ public slots:
     void cursorMoved();
 
 signals:
-    void tunerMoved(int deviation);
+    void tunerMoved(int centre, int deviation);
 
 private:
     void updateCursors();

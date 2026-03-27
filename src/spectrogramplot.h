@@ -64,7 +64,7 @@ public slots:
     void setPowerMin(int power);
     void setSquelch(int power);
     void setZoomLevel(int zoom);
-    void tunerMoved(int deviation);
+    void tunerMoved(int centre, int deviation);
 
 private:
     const int linesPerGraduation = 50;

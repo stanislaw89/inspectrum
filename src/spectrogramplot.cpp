@@ -418,7 +418,7 @@ void SpectrogramPlot::setPowerMax(int power)
 {
     powerMax = power;
     pixmapCache.clear();
-    tunerMoved(666);
+    tunerMoved(tuner->centre(), tuner->deviation());
 }
 
 void SpectrogramPlot::setPowerMin(int power)
@@ -432,7 +432,7 @@ void SpectrogramPlot::setSquelch(int sq)
     squelch = sq;
     pixmapCache.clear();
 
-    tunerMoved(666);
+    tunerMoved(tuner->centre(), tuner->deviation());
 }
 void SpectrogramPlot::setZoomLevel(int zoom)
 {
@@ -468,8 +468,9 @@ bool SpectrogramPlot::tunerEnabled()
     return (tunerTransform->subscriberCount() > 0);
 }
 
-void SpectrogramPlot::tunerMoved(int deviation)
+void SpectrogramPlot::tunerMoved(int centre, int deviation)
 {
+    Q_UNUSED(centre);
     tunerTransform->setFrequency(getTunerPhaseInc());
     tunerTransform->setTaps(getTunerTaps());
     tunerTransform->setRelativeBandwith(deviation * 2.0 / height());

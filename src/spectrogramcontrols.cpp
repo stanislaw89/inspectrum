@@ -151,6 +151,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
     bandwidthLabel = new QLabel();
+    tunerCenterFrequencyLabel = new QLabel();
     closeFMDemodButton = new QPushButton(tr("X"));
     closeFMDemodButton->setToolTip(tr("Close FM demod"));
     closeFMDemodButton->setFixedWidth(20);
@@ -162,6 +163,7 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     bandwidthTitleLayout->addWidget(bandwidthTitleLabel);
     bandwidthTitleLayout->addStretch();
     layout->addRow(bandwidthTitleWidget, bandwidthLabel);
+    layout->addRow(new QLabel(tr("Center:")), tunerCenterFrequencyLabel);
 
     // SigMF selection settings
     layout->addRow(new QLabel()); // TODO: find a better way to add an empty row?
@@ -202,6 +204,8 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     connect(powerMaxSlider, &QSlider::valueChanged, this, &SpectrogramControls::powerMaxChanged);
     connect(squelchSlider, &QSlider::valueChanged, this, &SpectrogramControls::squelchChanged);
     connect(closeFMDemodButton, &QPushButton::clicked, this, &SpectrogramControls::closeFMDemodClicked);
+    connect(sampleRate, &QLineEdit::textChanged, this, &SpectrogramControls::updateTunerLabels);
+    connect(centerFrequency, &QLineEdit::textChanged, this, &SpectrogramControls::updateTunerLabels);
 }
 
 void SpectrogramControls::clearCursorLabels()
@@ -211,6 +215,7 @@ void SpectrogramControls::clearCursorLabels()
     symbolPeriodLabel->setText("");
     symbolRateLabel->setText("");
     bandwidthLabel->setText("");
+    tunerCenterFrequencyLabel->setText("");
 }
 
 void SpectrogramControls::cursorsStateChanged(int state)
@@ -267,6 +272,7 @@ void SpectrogramControls::fftSizeChanged(int value)
     settings.setValue("FFTSize", value);
     int fftSize = pow(2, value);
     fftSizeValueLabel->setText(QString("[%1]").arg(fftSize));
+    updateTunerLabels();
     fftOrZoomChanged();
 }
 
@@ -383,10 +389,12 @@ void SpectrogramControls::zoomOut()
     zoomLevelSlider->setValue(zoomLevelSlider->value() - 1);
 }
 
-void SpectrogramControls::tunerMoved(int deviation)
+void SpectrogramControls::tunerMoved(int centre, int deviation)
 {
-    // int deviation is width in pixels from plot
-    bandwidthLabel->setText(QString::number(getBandwidth(deviation)) + "kHz");
+    tunerActive = true;
+    tunerCentre = centre;
+    tunerDeviation = deviation;
+    updateTunerLabels();
 }
 
 int SpectrogramControls::getBandwidth(int deviation) {
@@ -395,6 +403,28 @@ int SpectrogramControls::getBandwidth(int deviation) {
     double hzPerPx = rate / fftSize;
     return deviation * hzPerPx / 1000 * 2;
 }
+
+double SpectrogramControls::getTunerCenterFrequency(int centre) const
+{
+    double rate = sampleRate->text().toDouble();
+    double fftSize = pow(2, fftSizeSlider->value());
+    double baseFrequency = centerFrequency->text().toDouble();
+    return baseFrequency + ((0.5 - centre / fftSize) * rate);
+}
+
+void SpectrogramControls::updateTunerLabels()
+{
+    if (!tunerActive) {
+        bandwidthLabel->setText("");
+        tunerCenterFrequencyLabel->setText("");
+        return;
+    }
+
+    bandwidthLabel->setText(QString::number(getBandwidth(tunerDeviation)) + "kHz");
+    tunerCenterFrequencyLabel->setText(
+        QString::fromStdString(formatSIValue(getTunerCenterFrequency(tunerCentre))) + "Hz"
+    );
+}
 void SpectrogramControls::enableAnnotations(bool enabled) {
     // disable annotation comments checkbox when annotations are disabled
     commentsCheckBox->setEnabled(enabled);
@@ -402,6 +432,7 @@ void SpectrogramControls::enableAnnotations(bool enabled) {
 
 void SpectrogramControls::closeFMDemodClicked()
 {
-    bandwidthLabel->setText("");
+    tunerActive = false;
+    updateTunerLabels();
     emit closeFMDemod();
 }
