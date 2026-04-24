@@ -46,6 +46,7 @@ SpectrogramPlot::SpectrogramPlot(std::shared_ptr<SampleSource<std::complex<float
     centerFrequency = 0;
     frequencyScaleEnabled = false;
     sigmfAnnotationsEnabled = true;
+    tunerInitialized = false;
 
     for (int i = 0; i < 256; i++) {
         float p = (float)i / 256;
@@ -252,6 +253,16 @@ QString *SpectrogramPlot::mouseAnnotationComment(const QMouseEvent *event) {
 
 void SpectrogramPlot::moveTunerToMouse() {
     tuner->setCentre(lastMouseY);
+}
+
+void SpectrogramPlot::prepareTunerForDemod()
+{
+    if (!tunerInitialized) {
+        tuner->setDeviation(std::max(10, height() / 5));
+        tunerInitialized = true;
+    }
+
+    moveTunerToMouse();
 }
 
 void SpectrogramPlot::paintMid(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)

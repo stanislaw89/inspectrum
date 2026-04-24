@@ -31,29 +31,50 @@ Tuner::Tuner(int height, QObject * parent) : height(height), QObject::QObject(pa
 
     cfCursor->setPos(100);
     _deviation = 10;
+    minPosition = cfCursor->pos() - _deviation;
+    maxPosition = cfCursor->pos() + _deviation;
     updateCursors();
 }
 
 int Tuner::centre()
 {
-    return cfCursor->pos();
+    return centreFromEdges();
+}
+
+int Tuner::centreFromEdges() const
+{
+    return (minPosition + maxPosition) / 2;
 }
 
 void Tuner::cursorMoved()
 {
     Cursor *sender = static_cast<Cursor*>(QObject::sender());
-    if (sender != cfCursor) {
-        // Limit cursor positions to within plot
-        auto posRange = range_t<int>{0, height};
-        sender->setPos(posRange.clip(sender->pos()));
+    auto posRange = range_t<int>{0, height};
 
-        // Limit deviation range to half of total BW (either side of centre)
-        auto deviationRange = range_t<int>{2, height / 2};
-        _deviation = deviationRange.clip(std::abs(sender->pos() - cfCursor->pos()));
+    if (sender == cfCursor) {
+        int delta = posRange.clip(sender->pos()) - centreFromEdges();
+        delta = std::max(-minPosition, std::min(delta, height - maxPosition));
+        minPosition += delta;
+        maxPosition += delta;
     } else {
-        auto cfRange = range_t<int>{_deviation, height - _deviation};
-        sender->setPos(cfRange.clip(sender->pos()));
+        int currentCentre = cfCursor->pos();
+        int maxDeviation = std::max(minimumDeviation, std::min(currentCentre, height - currentCentre));
+
+        if (currentModifiers & Qt::ShiftModifier) {
+            if (sender == minCursor) {
+                minPosition = range_t<int>{0, maxPosition - (minimumDeviation * 2)}.clip(posRange.clip(sender->pos()));
+            } else {
+                maxPosition = range_t<int>{minPosition + (minimumDeviation * 2), height}.clip(posRange.clip(sender->pos()));
+            }
+        } else {
+            int newDeviation = std::abs(posRange.clip(sender->pos()) - currentCentre);
+            _deviation = range_t<int>{minimumDeviation, maxDeviation}.clip(newDeviation);
+            minPosition = currentCentre - _deviation;
+            maxPosition = currentCentre + _deviation;
+        }
     }
+
+    _deviation = std::max(1, (maxPosition - minPosition) / 2);
 
     updateCursors();
 }
@@ -65,6 +86,8 @@ int Tuner::deviation()
 
 bool Tuner::mouseEvent(QEvent::Type type, QMouseEvent event)
 {
+    currentModifiers = event.modifiers();
+
     if (cfCursor->mouseEvent(type, event))
         return true;
     if (minCursor->mouseEvent(type, event))
@@ -101,24 +124,40 @@ void Tuner::paintFront(QPainter &painter, QRect &rect, range_t<size_t> sampleRan
 
 void Tuner::setCentre(int centre)
 {
-    cfCursor->setPos(centre);
+    int delta = centre - centreFromEdges();
+    delta = std::max(-minPosition, std::min(delta, height - maxPosition));
+    minPosition += delta;
+    maxPosition += delta;
     updateCursors();
 }
 
 void Tuner::setDeviation(int dev)
 {
     _deviation = std::max(1, dev);
+    int currentCentre = centreFromEdges();
+    int maxDeviation = std::max(1, std::min(currentCentre, height - currentCentre));
+    _deviation = std::min(_deviation, maxDeviation);
+    minPosition = currentCentre - _deviation;
+    maxPosition = currentCentre + _deviation;
     updateCursors();
 }
 
 void Tuner::setHeight(int height)
 {
     this->height = height;
+    minPosition = range_t<int>{0, height}.clip(minPosition);
+    maxPosition = range_t<int>{0, height}.clip(maxPosition);
+
+    if (maxPosition - minPosition < minimumDeviation * 2) {
+        maxPosition = std::min(height, minPosition + minimumDeviation * 2);
+        minPosition = std::max(0, maxPosition - minimumDeviation * 2);
+    }
 }
 
 void Tuner::updateCursors()
 {
-    minCursor->setPos(cfCursor->pos() - _deviation);
-    maxCursor->setPos(cfCursor->pos() + _deviation);
+    cfCursor->setPos(centreFromEdges());
+    minCursor->setPos(minPosition);
+    maxCursor->setPos(maxPosition);
     emit tunerMoved(centre(), _deviation);
 }

@@ -57,6 +57,7 @@ public:
     QString *mouseAnnotationComment(const QMouseEvent *event);
 
     void moveTunerToMouse();
+    void prepareTunerForDemod();
 
 public slots:
     void setFFTSize(int size);
@@ -88,6 +89,7 @@ private:
     double centerFrequency;
     bool frequencyScaleEnabled;
     bool sigmfAnnotationsEnabled;
+    bool tunerInitialized;
 
     float lastMouseY;
 

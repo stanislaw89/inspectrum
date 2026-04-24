@@ -338,7 +338,7 @@ void PlotView::keyPressEvent(QKeyEvent *event) {
 	        cursorsMoved();
 			break;
 		case Qt::Key_F:
-            spectrogramPlot->moveTunerToMouse();
+            spectrogramPlot->prepareTunerForDemod();
 			if (spectrogramPlot->tunerEnabled()) {
 				break;
 			}

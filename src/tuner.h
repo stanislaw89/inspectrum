@@ -48,10 +48,15 @@ signals:
 
 private:
     void updateCursors();
+    int centreFromEdges() const;
 
     Cursor *minCursor;
     Cursor *cfCursor;
     Cursor *maxCursor;
     int _deviation;
     int height;
+    int minPosition = 0;
+    int maxPosition = 0;
+    Qt::KeyboardModifiers currentModifiers = Qt::NoModifier;
+    static constexpr int minimumDeviation = 2;
 };
