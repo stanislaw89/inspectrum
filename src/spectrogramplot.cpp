@@ -27,6 +27,7 @@
 #include <QRect>
 #include <liquid/liquid.h>
 #include <algorithm>
+#include <cmath>
 #include <functional>
 #include <cstdlib>
 #include <limits>
@@ -114,23 +115,30 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
 
     uint64_t tick = 0;
 
+    double bottomFreq = centerFrequency - (sampleRate / 2);
+    double topFreq = centerFrequency + (sampleRate / 2);
+    double maxAbsFreq = std::max(std::abs(bottomFreq), std::abs(topFreq));
+
     char suffixBuf[4];
-    uint64_t divisor = 1;
-    if (bwPerTick % 1000000000 == 0) {
+    double divisor = 1;
+    if (maxAbsFreq >= 10000000000.0) {
         snprintf(suffixBuf, sizeof(suffixBuf), "GHz");
-        divisor = 1000000000;
-    } else if (bwPerTick % 1000000 == 0) {
+        divisor = 1000000000.0;
+    } else if (maxAbsFreq >= 1000000.0) {
         snprintf(suffixBuf, sizeof(suffixBuf), "MHz");
-        divisor = 1000000;
-    } else if(bwPerTick % 1000 == 0) {
+        divisor = 1000000.0;
+    } else if (maxAbsFreq >= 1000.0) {
         snprintf(suffixBuf, sizeof(suffixBuf), "kHz");
-        divisor = 1000;
+        divisor = 1000.0;
     } else {
         snprintf(suffixBuf, sizeof(suffixBuf), "Hz");
-        divisor = 1;
+        divisor = 1.0;
     }
 
-    double bottomFreq = centerFrequency - (sampleRate / 2);
+    int precision = 0;
+    if (divisor > 1.0 && bwPerTick < divisor) {
+        precision = std::min(6, static_cast<int>(std::ceil(std::log10(divisor / bwPerTick))));
+    }
 
     while (tick <= sampleRate) {
         // int ticky = (-1*tick / bwPerPixel) + ybottom;
@@ -138,7 +146,7 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
         int tickpy = plotHeight / 2 - tick / bwPerPixel + y;
         int tickny = plotHeight / 2 + tick / bwPerPixel + y;
 
-        int64_t tfreq =  (bottomFreq + tick)/divisor;
+        double tfreq = (bottomFreq + tick) / divisor;
         /*
 		painter.drawLine(0, tickpy, 30, tickpy);
 		if (!inputSource->realSignal())
@@ -147,7 +155,7 @@ void SpectrogramPlot::paintFrequencyScale(QPainter &painter, QRect &rect)
 
         if (tfreq != 0) {
 			char buf[128];
-			snprintf(buf, sizeof(buf), "%li %s",tfreq, suffixBuf);
+			snprintf(buf, sizeof(buf), "%.*f %s", precision, tfreq, suffixBuf);
 
 			painter.drawLine(0, ticky, 40, ticky);
 			if (tfreq > centerFrequency/divisor) {

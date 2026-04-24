@@ -412,6 +412,25 @@ double SpectrogramControls::getTunerCenterFrequency(int centre) const
     return baseFrequency + ((0.5 - centre / fftSize) * rate);
 }
 
+QString SpectrogramControls::formatFrequencyLabel(double frequency) const
+{
+    double absFrequency = std::abs(frequency);
+
+    if (absFrequency >= 10000000000.0) {
+        return QString::number(frequency / 1000000000.0, 'f', 3) + "GHz";
+    }
+
+    if (absFrequency >= 1000000.0) {
+        return QString::number(frequency / 1000000.0, 'f', 3) + "MHz";
+    }
+
+    if (absFrequency >= 1000.0) {
+        return QString::number(frequency / 1000.0, 'f', 3) + "kHz";
+    }
+
+    return QString::number(frequency, 'f', 3) + "Hz";
+}
+
 void SpectrogramControls::updateTunerLabels()
 {
     if (!tunerActive) {
@@ -421,9 +440,7 @@ void SpectrogramControls::updateTunerLabels()
     }
 
     bandwidthLabel->setText(QString::number(getBandwidth(tunerDeviation)) + "kHz");
-    tunerCenterFrequencyLabel->setText(
-        QString::fromStdString(formatSIValue(getTunerCenterFrequency(tunerCentre))) + "Hz"
-    );
+    tunerCenterFrequencyLabel->setText(formatFrequencyLabel(getTunerCenterFrequency(tunerCentre)));
 }
 void SpectrogramControls::enableAnnotations(bool enabled) {
     // disable annotation comments checkbox when annotations are disabled

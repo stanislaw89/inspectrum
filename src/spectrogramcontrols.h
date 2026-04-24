@@ -68,6 +68,7 @@ private:
     void fftOrZoomChanged(void);
     int getBandwidth(int deviation);
     double getTunerCenterFrequency(int centre) const;
+    QString formatFrequencyLabel(double frequency) const;
     void updateTunerLabels();
 
 public:
