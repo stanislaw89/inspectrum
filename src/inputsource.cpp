@@ -354,11 +354,8 @@ QJsonObject InputSource::readMetaData(const QString &filename)
     return root;
 }
 
-void InputSource::openFile(const char *filename)
+bool InputSource::setSampleAdapter(const std::string &suffix)
 {
-    QFileInfo fileInfo(filename);
-    std::string suffix = std::string(fileInfo.suffix().toLower().toUtf8().constData());
-    if (_fmt != "") { suffix = _fmt; } // allow fmt override
     if ((suffix == "cfile") || (suffix == "cf32")  || (suffix == "fc32")) {
         sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
     }
@@ -398,6 +395,25 @@ void InputSource::openFile(const char *filename)
         _realSignal = true;
     }
     else {
+        return false;
+    }
+    return true;
+}
+
+void InputSource::openFile(const char *filename)
+{
+    QFileInfo fileInfo(filename);
+    std::string suffix = std::string(fileInfo.suffix().toLower().toUtf8().constData());
+    if (_fmt != "") { suffix = _fmt; } // allow fmt override
+
+    std::string formatSuffix = suffix;
+
+    if ((suffix == "sigmf-data") || (suffix == "sigmf-meta")) {
+        QFileInfo baseInfo(fileInfo.completeBaseName());
+        formatSuffix = std::string(baseInfo.suffix().toLower().toUtf8().constData());
+    }
+
+    if (!setSampleAdapter(formatSuffix)) {
         sampleAdapter = std::make_unique<ComplexF32SampleAdapter>();
     }
 

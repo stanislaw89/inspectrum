@@ -44,6 +44,7 @@ private:
     bool _realSignal = false;
 
     QJsonObject readMetaData(const QString &filename);
+    bool setSampleAdapter(const std::string &suffix);
 
 public:
     InputSource();
